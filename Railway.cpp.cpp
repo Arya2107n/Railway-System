@@ -2,295 +2,154 @@
 #include <string>
 using namespace std;
 
-class Vehicle {
-protected:
-    int vehicleID;
-    string manufacturer;
-    string model;
-    int year;
-
-    static int totalVehicles;
+class Train {
+private:
+    int trainNumber;
+    string trainName;
+    string source;
+    string destination;
+    string trainTime;
+    static int trainCount;
 
 public:
-    Vehicle() : vehicleID(0), manufacturer(""), model(""), year(0) {
-        totalVehicles++;
+    Train() : trainNumber(0) {
+        trainName = "";
+        source = "";
+        destination = "";
+        trainTime = "";
+        trainCount++;
     }
 
-    Vehicle(int id, const string& manu, const string& mod, int yr)
-        : vehicleID(id), manufacturer(manu), model(mod), year(yr) {
-        totalVehicles++;
+    Train(int num, const string& name, const string& src, const string& dest, const string& time) 
+        : trainNumber(num), trainName(name), source(src), destination(dest), trainTime(time) {
+        trainCount++;
     }
 
-    virtual ~Vehicle() {
-        totalVehicles--;
+    ~Train() {
+        trainCount--;
     }
 
-    int getVehicleID() const { return vehicleID; }
-    static int getTotalVehicles() { return totalVehicles; }
+    void inputTrainDetails() {
+        cout << "Enter Train Number: ";
+        cin >> trainNumber;
+        cin.ignore(); // Clear newline for getline
+        
+        cout << "Enter Train Name: ";
+        getline(cin, trainName);
+        
+        cout << "Enter Source: ";
+        getline(cin, source);
+        
+        cout << "Enter Destination: ";
+        getline(cin, destination);
+        
+        cout << "Enter Train Time: ";
+        getline(cin, trainTime);
+    }
 
-    virtual void display() const {
-        cout << "ID: " << vehicleID
-             << ", Manufacturer: " << manufacturer
-             << ", Model: " << model
-             << ", Year: " << year;
+    void displayTrainDetails() const {
+        cout << "Train Number: " << trainNumber << endl;
+        cout << "Train Name: " << trainName << endl;
+        cout << "Source: " << source << endl;
+        cout << "Destination: " << destination << endl;
+        cout << "Train Time: " << trainTime << endl;
+        cout << endl;
+    }
+
+    int getTrainNumber() const {
+        return trainNumber;
+    }
+    
+    static int getTrainCount() {
+        return trainCount;
     }
 };
 
-int Vehicle::totalVehicles = 0;
+int Train::trainCount = 0;
 
-class Car : public Vehicle {
-protected:
-    string fuelType;
-
-public:
-    Car() : Vehicle(), fuelType("") {}
-
-    Car(int id, const string& manu, const string& mod, int yr, const string& fuel)
-        : Vehicle(id, manu, mod, yr), fuelType(fuel) {}
-
-    void display() const override {
-        Vehicle::display();
-        cout << ", Fuel Type: " << fuelType;
-    }
-};
-
-class ElectricCar : public Car {
-protected:
-    int batteryCapacity;
+class RailwaySystem {
+private:
+    Train trains[100];
+    int totalTrains;
 
 public:
-    ElectricCar() : Car(), batteryCapacity(0) {}
+    RailwaySystem() : totalTrains(0) {}
 
-    ElectricCar(int id, const string& manu, const string& mod,
-                int yr, const string& fuel, int cap)
-        : Car(id, manu, mod, yr, fuel), batteryCapacity(cap) {}
-
-    void display() const override {
-        Car::display();
-        cout << ", Battery Capacity: " << batteryCapacity << " kWh";
-    }
-};
-
-class Aircraft {
-protected:
-    int flightRange;
-
-public:
-    Aircraft() : flightRange(0) {}
-    Aircraft(int fr) : flightRange(fr) {}
-    virtual ~Aircraft() {}
-
-    void displayAircraft() const {
-        cout << ", Flight Range: " << flightRange << " km";
-    }
-};
-
-class FlyingCar : public Car, public Aircraft {
-public:
-    FlyingCar() : Car(), Aircraft() {}
-
-    FlyingCar(int id, const string& manu, const string& mod,
-              int yr, const string& fuel, int fr)
-        : Car(id, manu, mod, yr, fuel), Aircraft(fr) {}
-
-    void display() const override {
-        Car::display();
-        displayAircraft();
-    }
-};
-
-class SportsCar : public ElectricCar {
-    int topSpeed;
-
-public:
-    SportsCar() : ElectricCar(), topSpeed(0) {}
-
-    SportsCar(int id, const string& manu, const string& mod,
-              int yr, const string& fuel, int cap, int ts)
-        : ElectricCar(id, manu, mod, yr, fuel, cap), topSpeed(ts) {}
-
-    void display() const override {
-        ElectricCar::display();
-        cout << ", Top Speed: " << topSpeed << " km/h";
-    }
-};
-
-class Sedan : public Car {
-public:
-    Sedan() : Car() {}
-
-    Sedan(int id, const string& manu, const string& mod,
-          int yr, const string& fuel)
-        : Car(id, manu, mod, yr, fuel) {}
-
-    void display() const override {
-        Car::display();
-        cout << " (Sedan)";
-    }
-};
-
-class SUV : public Car {
-public:
-    SUV() : Car() {}
-
-    SUV(int id, const string& manu, const string& mod,
-        int yr, const string& fuel)
-        : Car(id, manu, mod, yr, fuel) {}
-
-    void display() const override {
-        Car::display();
-        cout << " (SUV)";
-    }
-};
-
-class VehicleRegistry {
-    Vehicle* vehicles[100];
-    int count;
-
-public:
-    VehicleRegistry() : count(0) {}
-
-    ~VehicleRegistry() {
-        for (int i = 0; i < count; i++) {
-            delete vehicles[i];
-        }
-    }
-
-    void addVehicle(Vehicle* v) {
-        if (count < 100) {
-            vehicles[count++] = v;
+    void addTrain() {
+        if (totalTrains < 100) {
+            cout << "Adding Train " << totalTrains + 1 << ":" << endl;
+            trains[totalTrains].inputTrainDetails();
+            totalTrains++;
         } else {
-            cout << "Registry Full!\n";
+            cout << "Train limit reached!" << endl;
         }
     }
 
-    void displayAll() const {
-        if (count == 0) {
-            cout << "No vehicles available.\n";
-            return;
+    void displayAllTrains() const {
+        if (totalTrains == 0) {
+            cout << "No train records available." << endl;
         }
-
-        for (int i = 0; i < count; i++) {
-            vehicles[i]->display();
-            cout << endl;
+        for (int i = 0; i < totalTrains; i++) {
+            cout << "Train " << i + 1 << " details:" << endl;
+            trains[i].displayTrainDetails();
         }
     }
 
-    Vehicle* searchById(int id) const {
-        for (int i = 0; i < count; i++) {
-            if (vehicles[i]->getVehicleID() == id)
-                return vehicles[i];
+    void searchTrainByNumber(int number) const {
+        bool found = false;
+        for (int i = 0; i < totalTrains; i++) {
+            if (trains[i].getTrainNumber() == number) {
+                trains[i].displayTrainDetails();
+                found = true;
+                break;
+            }
         }
-        return nullptr;
+        if (!found) {
+            cout << "Train with number " << number << " not found!" << endl;
+        }
     }
 };
-
-void menu() {
-    cout << "\n--- Vehicle Registry System ---\n";
-    cout << "1. Add Vehicle\n";
-    cout << "2. View All Vehicles\n";
-    cout << "3. Search by ID\n";
-    cout << "4. Exit\n";
-    cout << "Enter choice: ";
-}
 
 int main() {
-    VehicleRegistry registry;
-    int choice;
+    RailwaySystem system;
 
+    // Initial input: Enter at least three train records
+    cout << "Enter initial train records (minimum 3): " << endl;
+    for (int i = 0; i < 3; i++) {
+        system.addTrain();
+    }
+
+    int choice;
     do {
-        menu();
+        cout << "\n--- Railway Reservation System Menu ---\n";
+        cout << "1. Add New Train Record\n";
+        cout << "2. Display All Train Records\n";
+        cout << "3. Search Train by Number\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice) {
-        case 1: {
-            cout << "\nVehicle Types:\n";
-            cout << "1. Car\n2. ElectricCar\n3. FlyingCar\n4. SportsCar\n5. Sedan\n6. SUV\n";
-
-            int vtype;
-            cout << "Select type (1-6): ";
-            cin >> vtype;
-
-            int id, yr, cap, fr, ts;
-            string manu, mod, fuel;
-            Vehicle* v = nullptr;
-
-            cout << "Enter ID, Manufacturer, Model, Year: ";
-            cin >> id >> manu >> mod >> yr;
-
-            switch (vtype) {
-            case 1:
-                cout << "Enter Fuel Type: ";
-                cin >> fuel;
-                v = new Car(id, manu, mod, yr, fuel);
-                break;
-
-            case 2:
-                cout << "Enter Fuel Type and Battery Capacity: ";
-                cin >> fuel >> cap;
-                v = new ElectricCar(id, manu, mod, yr, fuel, cap);
-                break;
-
-            case 3:
-                cout << "Enter Fuel Type and Flight Range: ";
-                cin >> fuel >> fr;
-                v = new FlyingCar(id, manu, mod, yr, fuel, fr);
-                break;
-
-            case 4:
-                cout << "Enter Fuel Type, Battery Capacity and Top Speed: ";
-                cin >> fuel >> cap >> ts;
-                v = new SportsCar(id, manu, mod, yr, fuel, cap, ts);
-                break;
-
-            case 5:
-                cout << "Enter Fuel Type: ";
-                cin >> fuel;
-                v = new Sedan(id, manu, mod, yr, fuel);
-                break;
-
-            case 6:
-                cout << "Enter Fuel Type: ";
-                cin >> fuel;
-                v = new SUV(id, manu, mod, yr, fuel);
-                break;
-
-            default:
-                cout << "Invalid type!\n";
-            }
-
-            if (v) registry.addVehicle(v);
+        case 1:
+            system.addTrain();
             break;
-        }
-
         case 2:
-            registry.displayAll();
+            system.displayAllTrains();
             break;
-
         case 3: {
-            int id;
-            cout << "Enter Vehicle ID to search: ";
-            cin >> id;
-
-            Vehicle* v = registry.searchById(id);
-            if (v)
-                v->display();
-            else
-                cout << "Not found!";
-            cout << endl;
+            int searchNumber;
+            cout << "Enter Train Number to search: ";
+            cin >> searchNumber;
+            system.searchTrainByNumber(searchNumber);
             break;
         }
-
         case 4:
-            cout << "Exiting...\n";
+            cout << "Exiting the system. Goodbye!" << endl;
             break;
-
         default:
-            cout << "Invalid choice!";
+            cout << "Invalid choice! Try again.\n";
         }
-
     } while (choice != 4);
 
     return 0;
 }
-ye kaise banay sikhao
